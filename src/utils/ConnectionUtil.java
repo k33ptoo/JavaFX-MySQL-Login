@@ -7,6 +7,7 @@ package utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  *
@@ -20,7 +21,7 @@ public class ConnectionUtil {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost/keeptoo_systems", "root", "");
             return con;
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             System.err.println("ConnectionUtil : "+ex.getMessage());
            return null;
         }

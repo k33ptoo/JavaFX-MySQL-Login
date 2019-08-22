@@ -87,41 +87,42 @@ public class LoginController implements Initializable {
 
     public LoginController() {
         con = ConnectionUtil.conDB();
-
     }
 
     //we gonna use string to check for status
     private String logIn() {
-
+        String status = "Success";
         String email = txtUsername.getText();
         String password = txtPassword.getText();
-
-        //query
-        String sql = "SELECT * FROM admins Where email = ? and password = ?";
-
-        try {
-            preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
-            resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
-                lblErrors.setTextFill(Color.TOMATO);
-                lblErrors.setText("Enter Correct Email/Password");
-                System.err.println("Wrong Logins --///");
-                return "Error";
-
-            } else {
-                lblErrors.setTextFill(Color.GREEN);
-                lblErrors.setText("Login Successful..Redirecting..");
-                System.out.println("Successfull Login");
-                return "Success";
+        if(email.isEmpty() || password.isEmpty()) {
+            setLblError(Color.TOMATO, "Empty credentials");
+            status = "Error";
+        } else {
+            //query
+            String sql = "SELECT * FROM admins Where email = ? and password = ?";
+            try {
+                preparedStatement = con.prepareStatement(sql);
+                preparedStatement.setString(1, email);
+                preparedStatement.setString(2, password);
+                resultSet = preparedStatement.executeQuery();
+                if (!resultSet.next()) {
+                    setLblError(Color.TOMATO, "Enter Correct Email/Password");
+                    status = "Error";
+                } else {
+                    setLblError(Color.GREEN, "Login Successful..Redirecting..");
+                }
+            } catch (SQLException ex) {
+                System.err.println(ex.getMessage());
+                status = "Exception";
             }
-
-        } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
-            return "Exception";
         }
-
+        
+        return status;
     }
-
+    
+    private void setLblError(Color color, String text) {
+        lblErrors.setTextFill(color);
+        lblErrors.setText(text);
+        System.out.println(text);
+    }
 }
